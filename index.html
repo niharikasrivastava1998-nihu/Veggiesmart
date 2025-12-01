@@ -33,19 +33,18 @@
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(10deg); }
         }
-        .floating-food {
-            animation: float 6s ease-in-out infinite;
+        .floating-doodle {
+            animation: float 8s ease-in-out infinite;
             position: absolute;
+            color: #22c55e; /* Green-500 */
             opacity: 0.15;
-            font-size: 2rem;
-            filter: grayscale(0.5); /* Subtle look */
         }
         /* Delays for variety */
         .delay-1 { animation-delay: 0s; }
-        .delay-2 { animation-delay: 1s; }
-        .delay-3 { animation-delay: 2s; }
-        .delay-4 { animation-delay: 3s; }
-        .delay-5 { animation-delay: 4s; }
+        .delay-2 { animation-delay: 1.5s; }
+        .delay-3 { animation-delay: 3s; }
+        .delay-4 { animation-delay: 4.5s; }
+        .delay-5 { animation-delay: 2s; }
 
         .hidden { display: none !important; }
         
@@ -74,12 +73,23 @@
 </head>
 <body class="bg-gradient-to-br from-orange-50 to-green-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden">
 
-    <!-- Background Decoration -->
+    <!-- Background Decoration Doodles (SVG Icons) -->
     <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden -z-10">
-        <div class="absolute top-20 left-10 text-6xl opacity-5 rotate-12">🍅</div>
-        <div class="absolute top-40 right-20 text-6xl opacity-5 -rotate-12">🥦</div>
-        <div class="absolute bottom-20 left-1/4 text-6xl opacity-5 rotate-45">🥑</div>
-        <div class="absolute top-1/2 right-10 text-6xl opacity-5 -rotate-6">🥕</div>
+        <div class="absolute top-20 left-10 opacity-5 rotate-12 text-green-700">
+            <i data-lucide="carrot" width="80" height="80"></i>
+        </div>
+        <div class="absolute top-40 right-20 opacity-5 -rotate-12 text-orange-600">
+            <i data-lucide="apple" width="90" height="90"></i>
+        </div>
+        <div class="absolute bottom-20 left-1/4 opacity-5 rotate-45 text-green-800">
+            <i data-lucide="leaf" width="100" height="100"></i>
+        </div>
+        <div class="absolute top-1/2 right-10 opacity-5 -rotate-6 text-orange-500">
+            <i data-lucide="citrus" width="70" height="70"></i>
+        </div>
+         <div class="absolute bottom-10 right-1/4 opacity-5 rotate-12 text-green-600">
+            <i data-lucide="salad" width="85" height="85"></i>
+        </div>
     </div>
 
     <!-- NAVIGATION -->
@@ -102,23 +112,37 @@
         <!-- SECTION 1: INPUT FORM -->
         <div id="input-section" class="max-w-xl mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden mt-8 animate-fade-in-up border border-white/50">
             
-            <!-- Hero Header with Doodles -->
+            <!-- Hero Header with Animated Doodles -->
             <div class="bg-gradient-to-r from-green-600 to-emerald-700 p-10 text-center relative overflow-hidden">
-                <!-- Floating Doodles -->
-                <div class="floating-food delay-1 top-4 left-4">🥬</div>
-                <div class="floating-food delay-2 top-8 right-12">🌽</div>
-                <div class="floating-food delay-3 bottom-4 left-16">🥕</div>
-                <div class="floating-food delay-4 bottom-8 right-6">🍆</div>
-                <div class="floating-food delay-5 top-1/2 left-1/2">🫑</div>
+                <!-- Floating Icons -->
+                <div class="floating-doodle delay-1 top-4 left-4 text-green-200">
+                    <i data-lucide="carrot" width="32" height="32"></i>
+                </div>
+                <div class="floating-doodle delay-2 top-8 right-12 text-orange-200">
+                    <i data-lucide="pizza" width="40" height="40"></i>
+                </div>
+                <div class="floating-doodle delay-3 bottom-4 left-16 text-yellow-200">
+                    <i data-lucide="banana" width="36" height="36"></i>
+                </div>
+                <div class="floating-doodle delay-4 bottom-8 right-6 text-green-100">
+                    <i data-lucide="leaf" width="28" height="28"></i>
+                </div>
+                <div class="floating-doodle delay-5 top-1/2 left-10 text-white">
+                     <i data-lucide="cherry" width="30" height="30"></i>
+                </div>
 
                 <div class="relative z-10">
-                    <div class="w-24 h-24 mx-auto bg-white rounded-full p-1 shadow-xl mb-4">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&h=200&q=80" 
-                             class="w-full h-full object-cover rounded-full border-4 border-green-100" 
-                             alt="Healthy Food">
+                    <div class="w-28 h-28 mx-auto bg-white rounded-full p-1.5 shadow-xl mb-4 relative group">
+                        <!-- Hero Image: A healthy salad bowl -->
+                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=300&h=300&q=80" 
+                             class="w-full h-full object-cover rounded-full border-4 border-green-50 group-hover:scale-105 transition-transform duration-500" 
+                             alt="Healthy Vegetarian Food">
+                        <div class="absolute bottom-0 right-0 bg-orange-500 text-white p-2 rounded-full border-4 border-white shadow-lg">
+                             <i data-lucide="heart" width="16" height="16" fill="currentColor"></i>
+                        </div>
                     </div>
-                    <h2 class="text-3xl font-bold text-white mb-2">Build Your Plate</h2>
-                    <p class="text-green-100 font-medium">Tell us about your day, get a perfect vegetarian plan.</p>
+                    <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Build Your Plate</h2>
+                    <p class="text-green-100 font-medium opacity-90">Tell us about your day, get a perfect vegetarian plan.</p>
                 </div>
             </div>
             
@@ -350,8 +374,8 @@
             // Pollinations AI URL
             const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=400&height=300&nologo=true&seed=${Math.random()}`; 
             
-            // Fallback Image (Stock Unsplash Image)
-            const fallbackUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
+            // Fallback Image (Generic Vegetarian Food if AI fails)
+            const fallbackUrl = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80";
 
             let badgeColor = "bg-green-500";
             if(meal.type === "birthday") badgeColor = "bg-purple-500";
@@ -359,7 +383,7 @@
 
             return `
             <div onclick="openRecipe('${categoryKey}')" class="cursor-pointer group bg-white rounded-[1.5rem] shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full border border-gray-100 overflow-hidden hover:-translate-y-2">
-                <div class="h-48 overflow-hidden relative">
+                <div class="h-48 overflow-hidden relative bg-gray-100">
                     <img src="${imgUrl}" 
                          alt="${meal.name}" 
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -435,10 +459,10 @@
             const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(meal.name + " vegetarian recipe")}`;
             const prompt = `${meal.name} vegetarian food, cinematic, 8k`;
             const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=400&nologo=true&seed=${Math.random()}`;
-            const fallbackUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
+            const fallbackUrl = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80";
 
             const content = `
-                <div class="relative h-64">
+                <div class="relative h-64 bg-gray-100">
                     <img src="${imgUrl}" 
                          class="w-full h-full object-cover"
                          onerror="this.onerror=null;this.src='${fallbackUrl}';">
