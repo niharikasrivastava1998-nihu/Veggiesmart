@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeggieSmart - Vegetarian Meal Planner</title>
+    
+    <!-- 1. TAILWIND CSS (For styling without writing CSS files) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. LUCIDE ICONS (For the icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Animations */
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 0.5s ease-out forwards;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="bg-orange-50 font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- NAVIGATION -->
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-green-500 text-white p-2 rounded-lg">
+                    <i data-lucide="utensils" width="24" height="24"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-green-800">Veggie<span class="text-orange-500">Smart</span></h1>
+            </div>
+            <button id="reset-btn" class="hidden text-sm font-semibold text-gray-500 flex items-center gap-1 hover:text-green-600">
+                <i data-lucide="rotate-ccw" width="16"></i> Recalculate
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6 flex-grow w-full">
+        
+        <!-- SECTION 1: INPUT FORM -->
+        <div id="input-section" class="max-w-lg mx-auto bg-white rounded-3xl shadow-xl overflow-hidden mt-10 animate-fade-in-up">
+            <div class="bg-green-600 p-8 text-center">
+                <h2 class="text-3xl font-bold text-white mb-2">Build Your Plate</h2>
+                <p class="text-green-100">Tell us about your day, get a perfect vegetarian plan.</p>
+            </div>
+            
+            <div class="p-8">
+                <!-- Inputs -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
+                            <i data-lucide="weight" class="text-green-600" width="16"></i> Weight (kg)
+                        </label>
+                        <input type="number" id="weight" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="65">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
+                            <i data-lucide="ruler" class="text-green-600" width="16"></i> Height (cm)
+                        </label>
+                        <input type="number" id="height" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="170">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
+                            <i data-lucide="user" class="text-green-600" width="16"></i> Age
+                        </label>
+                        <input type="number" id="age" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="28">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
+                            <i data-lucide="user" class="text-green-600" width="16"></i> Gender
+                        </label>
+                        <select id="gender" class="shadow border rounded w-full py-3 px-4 bg-white focus:ring-2 focus:ring-green-400 outline-none">
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
+                        <i data-lucide="activity" class="text-green-600" width="16"></i> Walking (Hrs/Yesterday)
+                    </label>
+                    <input type="number" id="walking" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="1.5">
+                </div>
+
+                <!-- Occasion Toggles -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-3">Occasion Mode</label>
+                    <div class="flex bg-gray-100 p-1 rounded-lg">
+                        <button onclick="setOccasion('normal')" id="btn-normal" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold bg-white text-green-600 shadow-sm transition-all">
+                            <i data-lucide="sun" width="16"></i> Normal
+                        </button>
+                        <button onclick="setOccasion('birthday')" id="btn-birthday" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold text-gray-400 hover:text-gray-600 transition-all">
+                            <i data-lucide="party-popper" width="16"></i> Birthday
+                        </button>
+                        <button onclick="setOccasion('fast')" id="btn-fast" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold text-gray-400 hover:text-gray-600 transition-all">
+                            <i data-lucide="moon" width="16"></i> Fasting
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="generatePlan()" class="w-full bg-gradient-to-r from-green-500 to-green-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                    Generate Menu <i data-lucide="chevron-right" width="20"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: RESULTS DASHBOARD (Hidden by default) -->
+        <div id="result-section" class="hidden animate-fade-in-up">
+            
+            <!-- Summary Header -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-orange-100">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Your Daily Fuel</h2>
+                    <p class="text-gray-500">Based on your activity & <span id="display-occasion" class="font-bold text-orange-500 capitalize">Normal</span> mode.</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-400 font-bold uppercase">Target</div>
+                    <div class="text-3xl font-black text-green-600"><span id="total-calories">0</span> <span class="text-sm font-medium text-gray-400">kcal</span></div>
+                </div>
+            </div>
+
+            <!-- Meal Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="meal-grid">
+                <!-- Cards will be injected here by JS -->
+            </div>
+
+            <div class="mt-12 text-center text-gray-400 text-sm">
+                <p>Disclaimer: This is a general suggestion based on BMR formulas. Consult a nutritionist for medical advice.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 3. JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA ---
+        const foodDatabase = {
+            breakfast: [
+                { name: "Vegetable Poha with Peanuts", calories: 250, type: "normal", desc: "Flattened rice sautéed with mustard seeds, turmeric, and mixed veggies." },
+                { name: "Oats Upma with Carrots", calories: 300, type: "normal", desc: "Savory oats cooked with indian spices and crunchy vegetables." },
+                { name: "Paneer Paratha with Curd", calories: 450, type: "normal", desc: "Whole wheat flatbread stuffed with spiced cottage cheese." },
+                { name: "Fruit Salad & Almonds", calories: 200, type: "fast", desc: "Fresh seasonal fruits topped with soaked almonds." },
+                { name: "Sabudana Khichdi", calories: 350, type: "fast", desc: "Tapioca pearls cooked with potatoes and crushed peanuts." },
+                { name: "Chole Bhature", calories: 600, type: "birthday", desc: "Spicy chickpea curry with fried fluffy bread. A birthday treat!" },
+                { name: "Masala Dosa", calories: 400, type: "birthday", desc: "Crispy rice crepe filled with spiced potatoes." }
+            ],
+            lunch: [
+                { name: "Dal Tadka, Rice & Salad", calories: 450, type: "normal", desc: "Yellow lentils tempered with cumin/garlic served with steamed basmati." },
+                { name: "Roti, Bhindi Masala & Curd", calories: 400, type: "normal", desc: "Okra stir-fry served with whole wheat flatbreads." },
+                { name: "Palak Paneer & Jeera Rice", calories: 500, type: "normal", desc: "Cottage cheese cubes in a smooth spinach gravy." },
+                { name: "Rajgira Roti & Aloo Curry", calories: 350, type: "fast", desc: "Amaranth flour flatbread with boiled potato curry." },
+                { name: "Paneer Butter Masala & Naan", calories: 700, type: "birthday", desc: "Rich creamy tomato gravy with paneer and butter naan." },
+                { name: "Veg Biryani with Raita", calories: 600, type: "birthday", desc: "Aromatic basmati rice cooked with mixed vegetables and spices." }
+            ],
+            snacks: [
+                { name: "Roasted Makhana", calories: 150, type: "fast", desc: "Crunchy lotus seeds roasted with a pinch of rock salt." },
+                { name: "Green Tea & Biscuits", calories: 120, type: "normal", desc: "Light energy boost for the afternoon." },
+                { name: "Sprouts Chaat", calories: 200, type: "normal", desc: "Steamed sprouts mixed with onion, tomato and lemon juice." },
+                { name: "Sweet Potato Chaat", calories: 250, type: "fast", desc: "Boiled sweet potatoes tossed in spices and lemon." },
+                { name: "Chocolate Truffle Cake", calories: 400, type: "birthday", desc: "Rich chocolate cake because it's your special day!" },
+                { name: "Samosa with Mint Chutney", calories: 300, type: "birthday", desc: "Crispy pastry filled with spicy potatoes." }
+            ],
+            dinner: [
+                { name: "Moong Dal Khichdi", calories: 300, type: "normal", desc: "Comfort food mix of lentils and rice, light on the stomach." },
+                { name: "Grilled Veggie Salad", calories: 250, type: "normal", desc: "High protein, low carb mix of grilled vegetables." },
+                { name: "Bottle Gourd Soup", calories: 200, type: "normal", desc: "Hydrating soup served with multigrain toast." },
+                { name: "Milk & Dates", calories: 250, type: "fast", desc: "Warm milk served with sweet dates for energy." },
+                { name: "Vegetable Lasagna", calories: 550, type: "birthday", desc: "Layers of pasta, cheese, and veggies in tomato sauce." },
+                { name: "Pizza Margherita", calories: 600, type: "birthday", desc: "Classic cheese and tomato pizza." }
+            ]
+        };
+
+        // --- STATE ---
+        let currentOccasion = 'normal';
+
+        // --- FUNCTIONS ---
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Handle Occasion Switching
+        function setOccasion(mode) {
+            currentOccasion = mode;
+            
+            // Visual Update for Buttons
+            document.querySelectorAll('.occasion-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-green-600', 'shadow-sm');
+                btn.classList.add('text-gray-400');
+            });
+            const activeBtn = document.getElementById(`btn-${mode}`);
+            activeBtn.classList.remove('text-gray-400');
+            activeBtn.classList.add('bg-white', 'text-green-600', 'shadow-sm');
+        }
+
+        function calculateCalories(w, h, a, gender, walk) {
+            let bmr = (10 * w) + (6.25 * h) - (5 * a);
+            bmr += gender === 'male' ? 5 : -161;
+
+            let activityMultiplier = 1.2;
+            if (walk > 0.5) activityMultiplier = 1.375;
+            if (walk > 1.5) activityMultiplier = 1.55;
+            if (walk > 3) activityMultiplier = 1.725;
+
+            let total = Math.round(bmr * activityMultiplier);
+            
+            if (currentOccasion === 'birthday') total += 500;
+            if (currentOccasion === 'fast') total -= 200;
+
+            return total;
+        }
+
+        function getMeal(category) {
+            let list = foodDatabase[category];
+            let filtered = [];
+
+            if (currentOccasion === 'fast') {
+                filtered = list.filter(i => i.type === 'fast');
+            } else if (currentOccasion === 'birthday') {
+                filtered = list.filter(i => i.type === 'birthday' || i.type === 'normal');
+            } else {
+                filtered = list.filter(i => i.type === 'normal' || i.type === 'fast');
+            }
+
+            if (filtered.length === 0) filtered = list;
+            return filtered[Math.floor(Math.random() * filtered.length)];
+        }
+
+        function createMealCard(title, meal, iconName) {
+            // Generate Image URL
+            const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(meal.name + " tasty vegetarian food high quality professional photography")}?width=400&height=300&nologo=true`;
+            
+            return `
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-1 duration-300 flex flex-col h-full border-b-4 border-green-500">
+                <div class="h-40 overflow-hidden relative group">
+                    <img src="${imgUrl}" alt="${meal.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.src='https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=80'">
+                    <div class="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                        ${meal.calories} kcal
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-center gap-2 text-green-700 font-bold uppercase tracking-wide text-xs mb-2">
+                        <i data-lucide="${iconName}" width="14"></i> ${title}
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2 leading-tight">${meal.name}</h3>
+                    <p class="text-gray-500 text-sm flex-1">${meal.desc}</p>
+                </div>
+            </div>`;
+        }
+
+        function generatePlan() {
+            // 1. Get Values
+            const w = parseFloat(document.getElementById('weight').value);
+            const h = parseFloat(document.getElementById('height').value);
+            const a = parseFloat(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const walk = parseFloat(document.getElementById('walking').value) || 0;
+
+            if (!w || !h || !a) {
+                alert("Please fill in Weight, Height, and Age!");
+                return;
+            }
+
+            // 2. Calculate
+            const totalCals = calculateCalories(w, h, a, gender, walk);
+            
+            // 3. Select Meals
+            const breakfast = getMeal('breakfast');
+            const lunch = getMeal('lunch');
+            const snacks = getMeal('snacks');
+            const dinner = getMeal('dinner');
+
+            // 4. Update UI
+            document.getElementById('total-calories').innerText = totalCals;
+            document.getElementById('display-occasion').innerText = currentOccasion;
+
+            const grid = document.getElementById('meal-grid');
+            grid.innerHTML = `
+                ${createMealCard('Breakfast', breakfast, 'sun')}
+                ${createMealCard('Lunch', lunch, 'utensils')}
+                ${createMealCard('Snacks', snacks, 'coffee')}
+                ${createMealCard('Dinner', dinner, 'moon')}
+            `;
+
+            // 5. Toggle Views
+            document.getElementById('input-section').classList.add('hidden');
+            document.getElementById('result-section').classList.remove('hidden');
+            document.getElementById('reset-btn').classList.remove('hidden');
+
+            // Re-render icons for new elements
+            lucide.createIcons();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Reset Button Logic
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            document.getElementById('input-section').classList.remove('hidden');
+            document.getElementById('result-section').classList.add('hidden');
+            document.getElementById('reset-btn').classList.add('hidden');
+        });
+
+    </script>
+</body>
+</html>
