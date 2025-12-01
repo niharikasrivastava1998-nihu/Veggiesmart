@@ -5,110 +5,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VeggieSmart - Vegetarian Meal Planner</title>
     
-    <!-- 1. TAILWIND CSS (For styling without writing CSS files) -->
+    <!-- 1. TAILWIND CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. LUCIDE ICONS (For the icons) -->
+    <!-- 2. LUCIDE ICONS -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- 3. GOOGLE FONTS (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
+        body { font-family: 'Poppins', sans-serif; }
+        
         /* Custom Animations */
         @keyframes fade-in-up {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up {
-            animation: fade-in-up 0.5s ease-out forwards;
+            animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        
+        /* Floating Food Doodles Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        .floating-food {
+            animation: float 6s ease-in-out infinite;
+            position: absolute;
+            opacity: 0.15;
+            font-size: 2rem;
+            filter: grayscale(0.5); /* Subtle look */
+        }
+        /* Delays for variety */
+        .delay-1 { animation-delay: 0s; }
+        .delay-2 { animation-delay: 1s; }
+        .delay-3 { animation-delay: 2s; }
+        .delay-4 { animation-delay: 3s; }
+        .delay-5 { animation-delay: 4s; }
+
         .hidden { display: none !important; }
+        
+        /* Glassmorphism for Nav */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Modal Styles */
+        .modal-open { overflow: hidden; }
     </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        green: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534' },
+                        orange: { 50: '#fff7ed', 100: '#ffedd5', 500: '#f97316', 600: '#ea580c' }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-orange-50 font-sans text-gray-800 min-h-screen flex flex-col">
+<body class="bg-gradient-to-br from-orange-50 to-green-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden -z-10">
+        <div class="absolute top-20 left-10 text-6xl opacity-5 rotate-12">🍅</div>
+        <div class="absolute top-40 right-20 text-6xl opacity-5 -rotate-12">🥦</div>
+        <div class="absolute bottom-20 left-1/4 text-6xl opacity-5 rotate-45">🥑</div>
+        <div class="absolute top-1/2 right-10 text-6xl opacity-5 -rotate-6">🥕</div>
+    </div>
 
     <!-- NAVIGATION -->
-    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+    <nav class="glass-nav border-b border-gray-100 shadow-sm p-4 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="bg-green-500 text-white p-2 rounded-lg">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-2.5 rounded-xl shadow-lg shadow-green-200">
                     <i data-lucide="utensils" width="24" height="24"></i>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight text-green-800">Veggie<span class="text-orange-500">Smart</span></h1>
+                <h1 class="text-2xl font-extrabold tracking-tight text-gray-800">Veggie<span class="text-green-600">Smart</span></h1>
             </div>
-            <button id="reset-btn" class="hidden text-sm font-semibold text-gray-500 flex items-center gap-1 hover:text-green-600">
+            <button id="reset-btn" class="hidden text-sm font-semibold text-gray-500 flex items-center gap-2 hover:text-green-600 transition-colors bg-gray-100 px-4 py-2 rounded-full">
                 <i data-lucide="rotate-ccw" width="16"></i> Recalculate
             </button>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto p-6 flex-grow w-full">
+    <main class="max-w-6xl mx-auto p-6 flex-grow w-full relative">
         
         <!-- SECTION 1: INPUT FORM -->
-        <div id="input-section" class="max-w-lg mx-auto bg-white rounded-3xl shadow-xl overflow-hidden mt-10 animate-fade-in-up">
-            <div class="bg-green-600 p-8 text-center">
-                <h2 class="text-3xl font-bold text-white mb-2">Build Your Plate</h2>
-                <p class="text-green-100">Tell us about your day, get a perfect vegetarian plan.</p>
+        <div id="input-section" class="max-w-xl mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden mt-8 animate-fade-in-up border border-white/50">
+            
+            <!-- Hero Header with Doodles -->
+            <div class="bg-gradient-to-r from-green-600 to-emerald-700 p-10 text-center relative overflow-hidden">
+                <!-- Floating Doodles -->
+                <div class="floating-food delay-1 top-4 left-4">🥬</div>
+                <div class="floating-food delay-2 top-8 right-12">🌽</div>
+                <div class="floating-food delay-3 bottom-4 left-16">🥕</div>
+                <div class="floating-food delay-4 bottom-8 right-6">🍆</div>
+                <div class="floating-food delay-5 top-1/2 left-1/2">🫑</div>
+
+                <div class="relative z-10">
+                    <div class="w-24 h-24 mx-auto bg-white rounded-full p-1 shadow-xl mb-4">
+                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=200&h=200&q=80" class="w-full h-full object-cover rounded-full border-4 border-green-100" alt="Healthy Food">
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Build Your Plate</h2>
+                    <p class="text-green-100 font-medium">Tell us about your day, get a perfect vegetarian plan.</p>
+                </div>
             </div>
             
-            <div class="p-8">
+            <div class="p-8 md:p-10 space-y-6">
                 <!-- Inputs -->
-                <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
-                            <i data-lucide="weight" class="text-green-600" width="16"></i> Weight (kg)
+                        <label class="block text-gray-600 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                            Weight (kg)
                         </label>
-                        <input type="number" id="weight" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="65">
+                        <div class="relative">
+                            <i data-lucide="weight" class="absolute left-4 top-3.5 text-green-500" width="18"></i>
+                            <input type="number" id="weight" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition-all font-semibold text-gray-700" placeholder="65">
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
-                            <i data-lucide="ruler" class="text-green-600" width="16"></i> Height (cm)
+                        <label class="block text-gray-600 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                            Height (cm)
                         </label>
-                        <input type="number" id="height" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="170">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
-                            <i data-lucide="user" class="text-green-600" width="16"></i> Age
-                        </label>
-                        <input type="number" id="age" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="28">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
-                            <i data-lucide="user" class="text-green-600" width="16"></i> Gender
-                        </label>
-                        <select id="gender" class="shadow border rounded w-full py-3 px-4 bg-white focus:ring-2 focus:ring-green-400 outline-none">
-                            <option value="female">Female</option>
-                            <option value="male">Male</option>
-                        </select>
+                        <div class="relative">
+                            <i data-lucide="ruler" class="absolute left-4 top-3.5 text-green-500" width="18"></i>
+                            <input type="number" id="height" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition-all font-semibold text-gray-700" placeholder="170">
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
-                        <i data-lucide="activity" class="text-green-600" width="16"></i> Walking (Hrs/Yesterday)
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-600 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                            Age
+                        </label>
+                        <div class="relative">
+                            <i data-lucide="calendar" class="absolute left-4 top-3.5 text-green-500" width="18"></i>
+                            <input type="number" id="age" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition-all font-semibold text-gray-700" placeholder="28">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                            Gender
+                        </label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-4 top-3.5 text-green-500" width="18"></i>
+                            <select id="gender" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition-all font-semibold text-gray-700 appearance-none">
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-600 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                        Walking (Hrs/Yesterday)
                     </label>
-                    <input type="number" id="walking" class="shadow border rounded w-full py-3 px-4 focus:ring-2 focus:ring-green-400 outline-none" placeholder="1.5">
+                    <div class="relative">
+                        <i data-lucide="activity" class="absolute left-4 top-3.5 text-green-500" width="18"></i>
+                        <input type="number" id="walking" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition-all font-semibold text-gray-700" placeholder="e.g. 1.5">
+                    </div>
                 </div>
 
                 <!-- Occasion Toggles -->
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-3">Occasion Mode</label>
-                    <div class="flex bg-gray-100 p-1 rounded-lg">
-                        <button onclick="setOccasion('normal')" id="btn-normal" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold bg-white text-green-600 shadow-sm transition-all">
+                <div>
+                    <label class="block text-gray-600 text-xs font-bold uppercase tracking-wider mb-3">Occasion Mode</label>
+                    <div class="flex bg-gray-100 p-1.5 rounded-xl">
+                        <button onclick="setOccasion('normal')" id="btn-normal" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold bg-white text-green-600 shadow-md transition-all duration-300">
                             <i data-lucide="sun" width="16"></i> Normal
                         </button>
-                        <button onclick="setOccasion('birthday')" id="btn-birthday" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold text-gray-400 hover:text-gray-600 transition-all">
+                        <button onclick="setOccasion('birthday')" id="btn-birthday" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold text-gray-400 hover:text-gray-600 hover:bg-white/50 transition-all duration-300">
                             <i data-lucide="party-popper" width="16"></i> Birthday
                         </button>
-                        <button onclick="setOccasion('fast')" id="btn-fast" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold text-gray-400 hover:text-gray-600 transition-all">
+                        <button onclick="setOccasion('fast')" id="btn-fast" class="occasion-btn flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold text-gray-400 hover:text-gray-600 hover:bg-white/50 transition-all duration-300">
                             <i data-lucide="moon" width="16"></i> Fasting
                         </button>
                     </div>
                 </div>
 
-                <button onclick="generatePlan()" class="w-full bg-gradient-to-r from-green-500 to-green-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
-                    Generate Menu <i data-lucide="chevron-right" width="20"></i>
+                <button onclick="generatePlan()" class="w-full bg-gray-900 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 mt-4 group">
+                    Generate My Menu <i data-lucide="arrow-right" width="20" class="group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </div>
         </div>
@@ -117,111 +203,133 @@
         <div id="result-section" class="hidden animate-fade-in-up">
             
             <!-- Summary Header -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-orange-100">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Your Daily Fuel</h2>
-                    <p class="text-gray-500">Based on your activity & <span id="display-occasion" class="font-bold text-orange-500 capitalize">Normal</span> mode.</p>
+            <div class="bg-white rounded-[2rem] shadow-lg p-8 mb-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/60 relative overflow-hidden">
+                <!-- Background Pattern -->
+                <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-green-50 to-transparent opacity-50"></div>
+                
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Your Daily Fuel</h2>
+                    <p class="text-gray-500 font-medium">Customized for your <span id="display-occasion" class="font-bold text-green-600 capitalize">Normal</span> mode.</p>
                 </div>
-                <div class="text-center">
-                    <div class="text-xs text-gray-400 font-bold uppercase">Target</div>
-                    <div class="text-3xl font-black text-green-600"><span id="total-calories">0</span> <span class="text-sm font-medium text-gray-400">kcal</span></div>
+                
+                <div class="flex items-center gap-8 relative z-10">
+                    <div class="text-right">
+                        <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Daily Target</div>
+                        <div class="text-4xl font-black text-gray-800 tracking-tight"><span id="total-calories">0</span> <span class="text-lg font-bold text-green-500">kcal</span></div>
+                    </div>
+                    <div class="bg-green-100 p-4 rounded-2xl text-green-600">
+                        <i data-lucide="flame" width="32" height="32"></i>
+                    </div>
                 </div>
             </div>
 
             <!-- Meal Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="meal-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="meal-grid">
                 <!-- Cards will be injected here by JS -->
             </div>
 
-            <div class="mt-12 text-center text-gray-400 text-sm">
+            <div class="mt-16 text-center text-gray-400 text-sm font-medium">
                 <p>Disclaimer: This is a general suggestion based on BMR formulas. Consult a nutritionist for medical advice.</p>
             </div>
         </div>
 
     </main>
 
+    <!-- RECIPE MODAL OVERLAY -->
+    <div id="recipe-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="closeModal()"></div>
+
+        <!-- Modal Panel -->
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div id="modal-panel" class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl opacity-0 translate-y-4 duration-300">
+                    
+                    <!-- Close Button -->
+                    <button type="button" class="absolute top-4 right-4 z-20 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-all backdrop-blur-md" onclick="closeModal()">
+                        <i data-lucide="x" width="20"></i>
+                    </button>
+
+                    <!-- Content Injected Here -->
+                    <div id="modal-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 3. JAVASCRIPT LOGIC -->
     <script>
         // --- DATA ---
         const foodDatabase = {
             breakfast: [
-                { name: "Vegetable Poha with Peanuts", calories: 250, type: "normal", desc: "Flattened rice sautéed with mustard seeds, turmeric, and mixed veggies." },
-                { name: "Oats Upma with Carrots", calories: 300, type: "normal", desc: "Savory oats cooked with indian spices and crunchy vegetables." },
-                { name: "Paneer Paratha with Curd", calories: 450, type: "normal", desc: "Whole wheat flatbread stuffed with spiced cottage cheese." },
-                { name: "Fruit Salad & Almonds", calories: 200, type: "fast", desc: "Fresh seasonal fruits topped with soaked almonds." },
-                { name: "Sabudana Khichdi", calories: 350, type: "fast", desc: "Tapioca pearls cooked with potatoes and crushed peanuts." },
-                { name: "Chole Bhature", calories: 600, type: "birthday", desc: "Spicy chickpea curry with fried fluffy bread. A birthday treat!" },
-                { name: "Masala Dosa", calories: 400, type: "birthday", desc: "Crispy rice crepe filled with spiced potatoes." }
+                { name: "Vegetable Poha", calories: 250, type: "normal", ingredients: ["Flattened Rice", "Peanuts", "Mustard Seeds", "Curry Leaves", "Turmeric"], desc: "Light, flattened rice dish loaded with iron and healthy carbs." },
+                { name: "Oats Upma", calories: 300, type: "normal", ingredients: ["Rolled Oats", "Carrots", "Peas", "Green Chilies", "Ginger"], desc: "Fiber-rich savory oats cooked with crunchy vegetables." },
+                { name: "Paneer Paratha", calories: 450, type: "normal", ingredients: ["Whole Wheat Flour", "Paneer", "Coriander", "Green Chili", "Curd"], desc: "Stuffed flatbread providing a high-protein start to the day." },
+                { name: "Fruit Bowl & Almonds", calories: 200, type: "fast", ingredients: ["Apple", "Papaya", "Pomegranate", "Soaked Almonds"], desc: "Nature's detox bowl with essential vitamins and healthy fats." },
+                { name: "Sabudana Khichdi", calories: 350, type: "fast", ingredients: ["Sago Pearls", "Potatoes", "Peanuts", "Cumin", "Green Chili"], desc: "Traditional fasting superfood providing instant energy." },
+                { name: "Chole Bhature", calories: 600, type: "birthday", ingredients: ["Chickpeas", "Maida", "Spices", "Onion", "Pickle"], desc: "The ultimate Punjabi indulgence for your special day!" },
+                { name: "Masala Dosa", calories: 400, type: "birthday", ingredients: ["Rice Batter", "Potato Masala", "Coconut Chutney", "Sambar"], desc: "Crispy fermented crepe served with spicy potato filling." }
             ],
             lunch: [
-                { name: "Dal Tadka, Rice & Salad", calories: 450, type: "normal", desc: "Yellow lentils tempered with cumin/garlic served with steamed basmati." },
-                { name: "Roti, Bhindi Masala & Curd", calories: 400, type: "normal", desc: "Okra stir-fry served with whole wheat flatbreads." },
-                { name: "Palak Paneer & Jeera Rice", calories: 500, type: "normal", desc: "Cottage cheese cubes in a smooth spinach gravy." },
-                { name: "Rajgira Roti & Aloo Curry", calories: 350, type: "fast", desc: "Amaranth flour flatbread with boiled potato curry." },
-                { name: "Paneer Butter Masala & Naan", calories: 700, type: "birthday", desc: "Rich creamy tomato gravy with paneer and butter naan." },
-                { name: "Veg Biryani with Raita", calories: 600, type: "birthday", desc: "Aromatic basmati rice cooked with mixed vegetables and spices." }
+                { name: "Dal Tadka & Rice", calories: 450, type: "normal", ingredients: ["Toor Dal", "Basmati Rice", "Ghee", "Garlic", "Cumin"], desc: "Comforting yellow lentils tempered with spices." },
+                { name: "Bhindi Masala & Roti", calories: 400, type: "normal", ingredients: ["Okra", "Whole Wheat Flour", "Tomatoes", "Onions", "Spices"], desc: "Stir-fried okra packed with fiber and antioxidants." },
+                { name: "Palak Paneer & Rice", calories: 500, type: "normal", ingredients: ["Spinach", "Paneer", "Cream", "Garlic", "Jeera Rice"], desc: "Iron-rich spinach gravy with soft cottage cheese cubes." },
+                { name: "Rajgira Roti & Aloo", calories: 350, type: "fast", ingredients: ["Amaranth Flour", "Boiled Potatoes", "Rock Salt", "Cumin"], desc: "Gluten-free amaranth flatbread with simple potato curry." },
+                { name: "Paneer Butter Masala", calories: 700, type: "birthday", ingredients: ["Paneer", "Butter", "Cashews", "Tomatoes", "Naan"], desc: "Rich, creamy, restaurant-style gravy." },
+                { name: "Veg Biryani", calories: 600, type: "birthday", ingredients: ["Basmati Rice", "Mixed Veggies", "Saffron", "Fried Onions", "Curd"], desc: "Royal aromatic rice layered with exotic spices." }
             ],
             snacks: [
-                { name: "Roasted Makhana", calories: 150, type: "fast", desc: "Crunchy lotus seeds roasted with a pinch of rock salt." },
-                { name: "Green Tea & Biscuits", calories: 120, type: "normal", desc: "Light energy boost for the afternoon." },
-                { name: "Sprouts Chaat", calories: 200, type: "normal", desc: "Steamed sprouts mixed with onion, tomato and lemon juice." },
-                { name: "Sweet Potato Chaat", calories: 250, type: "fast", desc: "Boiled sweet potatoes tossed in spices and lemon." },
-                { name: "Chocolate Truffle Cake", calories: 400, type: "birthday", desc: "Rich chocolate cake because it's your special day!" },
-                { name: "Samosa with Mint Chutney", calories: 300, type: "birthday", desc: "Crispy pastry filled with spicy potatoes." }
+                { name: "Roasted Makhana", calories: 150, type: "fast", ingredients: ["Lotus Seeds", "Ghee", "Rock Salt", "Black Pepper"], desc: "Crunchy, guilt-free snack loaded with calcium." },
+                { name: "Green Tea & Biscuits", calories: 120, type: "normal", ingredients: ["Green Tea Bag", "Digestive Biscuits", "Honey"], desc: "Antioxidant boost to beat the afternoon slump." },
+                { name: "Sprouts Chaat", calories: 200, type: "normal", ingredients: ["Moong Sprouts", "Tomato", "Onion", "Lemon", "Chaat Masala"], desc: "Protein-packed salad with a tangy twist." },
+                { name: "Sweet Potato Chaat", calories: 250, type: "fast", ingredients: ["Sweet Potato", "Lemon Juice", "Rock Salt", "Cumin Powder"], desc: "Complex carbs that keep you full during fasts." },
+                { name: "Chocolate Cake", calories: 400, type: "birthday", ingredients: ["Cocoa Powder", "Flour", "Sugar", "Butter", "Chocolate Chips"], desc: "A slice of heaven because calories don't count today!" },
+                { name: "Samosa", calories: 300, type: "birthday", ingredients: ["Maida", "Potatoes", "Peas", "Spices", "Mint Chutney"], desc: "India's favorite crispy, spicy triangular snack." }
             ],
             dinner: [
-                { name: "Moong Dal Khichdi", calories: 300, type: "normal", desc: "Comfort food mix of lentils and rice, light on the stomach." },
-                { name: "Grilled Veggie Salad", calories: 250, type: "normal", desc: "High protein, low carb mix of grilled vegetables." },
-                { name: "Bottle Gourd Soup", calories: 200, type: "normal", desc: "Hydrating soup served with multigrain toast." },
-                { name: "Milk & Dates", calories: 250, type: "fast", desc: "Warm milk served with sweet dates for energy." },
-                { name: "Vegetable Lasagna", calories: 550, type: "birthday", desc: "Layers of pasta, cheese, and veggies in tomato sauce." },
-                { name: "Pizza Margherita", calories: 600, type: "birthday", desc: "Classic cheese and tomato pizza." }
+                { name: "Moong Dal Khichdi", calories: 300, type: "normal", ingredients: ["Moong Dal", "Rice", "Turmeric", "Ghee", "Hing"], desc: "The ultimate gut-healing comfort food." },
+                { name: "Grilled Veggie Salad", calories: 250, type: "normal", ingredients: ["Bell Peppers", "Zucchini", "Broccoli", "Tofu", "Olive Oil"], desc: "Low carb, high fiber dinner for weight management." },
+                { name: "Bottle Gourd Soup", calories: 200, type: "normal", ingredients: ["Bottle Gourd (Lauki)", "Ginger", "Black Pepper", "Toast"], desc: "Light, hydrating, and incredibly easy to digest." },
+                { name: "Milk & Dates", calories: 250, type: "fast", ingredients: ["Warm Milk", "Medjool Dates", "Saffron"], desc: "Slow-releasing energy to keep you going." },
+                { name: "Vegetable Lasagna", calories: 550, type: "birthday", ingredients: ["Lasagna Sheets", "Tomato Sauce", "Cheese", "Spinach", "Corn"], desc: "Cheesy Italian goodness loaded with veggies." },
+                { name: "Pizza Margherita", calories: 600, type: "birthday", ingredients: ["Pizza Base", "Mozzarella", "Basil", "Tomato Sauce"], desc: "Classic cheese pizza for a fun dinner party." }
             ]
         };
 
         // --- STATE ---
         let currentOccasion = 'normal';
+        let currentPlan = {};
 
         // --- FUNCTIONS ---
-
-        // Initialize Icons
         lucide.createIcons();
 
-        // Handle Occasion Switching
         function setOccasion(mode) {
             currentOccasion = mode;
-            
-            // Visual Update for Buttons
             document.querySelectorAll('.occasion-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-green-600', 'shadow-sm');
+                btn.classList.remove('bg-white', 'text-green-600', 'shadow-md');
                 btn.classList.add('text-gray-400');
             });
             const activeBtn = document.getElementById(`btn-${mode}`);
             activeBtn.classList.remove('text-gray-400');
-            activeBtn.classList.add('bg-white', 'text-green-600', 'shadow-sm');
+            activeBtn.classList.add('bg-white', 'text-green-600', 'shadow-md');
         }
 
         function calculateCalories(w, h, a, gender, walk) {
             let bmr = (10 * w) + (6.25 * h) - (5 * a);
             bmr += gender === 'male' ? 5 : -161;
-
             let activityMultiplier = 1.2;
             if (walk > 0.5) activityMultiplier = 1.375;
             if (walk > 1.5) activityMultiplier = 1.55;
             if (walk > 3) activityMultiplier = 1.725;
-
             let total = Math.round(bmr * activityMultiplier);
-            
             if (currentOccasion === 'birthday') total += 500;
             if (currentOccasion === 'fast') total -= 200;
-
             return total;
         }
 
         function getMeal(category) {
             let list = foodDatabase[category];
             let filtered = [];
-
             if (currentOccasion === 'fast') {
                 filtered = list.filter(i => i.type === 'fast');
             } else if (currentOccasion === 'birthday') {
@@ -229,35 +337,46 @@
             } else {
                 filtered = list.filter(i => i.type === 'normal' || i.type === 'fast');
             }
-
             if (filtered.length === 0) filtered = list;
             return filtered[Math.floor(Math.random() * filtered.length)];
         }
 
-        function createMealCard(title, meal, iconName) {
-            // Generate Image URL
-            const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(meal.name + " tasty vegetarian food high quality professional photography")}?width=400&height=300&nologo=true`;
+        function createMealCard(title, meal, iconName, categoryKey) {
+            // High Quality Food Image Prompt
+            const prompt = `${meal.name} delicious vegetarian food dish, professional food photography, 8k, vibrant colors, cinematic lighting, appetizing, close up`;
+            // Using Pollinations for reliable generation
+            const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=400&height=300&nologo=true&seed=${Math.random()}`; 
             
+            let badgeColor = "bg-green-500";
+            if(meal.type === "birthday") badgeColor = "bg-purple-500";
+            if(meal.type === "fast") badgeColor = "bg-blue-500";
+
             return `
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-1 duration-300 flex flex-col h-full border-b-4 border-green-500">
-                <div class="h-40 overflow-hidden relative group">
-                    <img src="${imgUrl}" alt="${meal.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.src='https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=80'">
-                    <div class="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                        ${meal.calories} kcal
+            <div onclick="openRecipe('${categoryKey}')" class="cursor-pointer group bg-white rounded-[1.5rem] shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full border border-gray-100 overflow-hidden hover:-translate-y-2">
+                <div class="h-48 overflow-hidden relative">
+                    <img src="${imgUrl}" alt="${meal.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                    <div class="absolute top-4 right-4 ${badgeColor} text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg tracking-wide uppercase">
+                        ${meal.type}
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-3 left-4 text-white font-bold flex items-center gap-1.5 text-shadow">
+                        <i data-lucide="flame" width="14"></i> ${meal.calories} kcal
                     </div>
                 </div>
-                <div class="p-5 flex-1 flex flex-col">
-                    <div class="flex items-center gap-2 text-green-700 font-bold uppercase tracking-wide text-xs mb-2">
-                        <i data-lucide="${iconName}" width="14"></i> ${title}
+                <div class="p-6 flex-1 flex flex-col relative">
+                    <div class="flex items-center gap-2 text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-2">
+                        <i data-lucide="${iconName}" width="14" class="text-green-500"></i> ${title}
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2 leading-tight">${meal.name}</h3>
-                    <p class="text-gray-500 text-sm flex-1">${meal.desc}</p>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 leading-tight group-hover:text-green-600 transition-colors">${meal.name}</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2">${meal.desc}</p>
+                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-center text-green-600 text-xs font-bold uppercase tracking-wide">
+                        View Recipe <i data-lucide="arrow-right" width="12" class="ml-1 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
                 </div>
             </div>`;
         }
 
         function generatePlan() {
-            // 1. Get Values
             const w = parseFloat(document.getElementById('weight').value);
             const h = parseFloat(document.getElementById('height').value);
             const a = parseFloat(document.getElementById('age').value);
@@ -269,46 +388,113 @@
                 return;
             }
 
-            // 2. Calculate
             const totalCals = calculateCalories(w, h, a, gender, walk);
             
-            // 3. Select Meals
-            const breakfast = getMeal('breakfast');
-            const lunch = getMeal('lunch');
-            const snacks = getMeal('snacks');
-            const dinner = getMeal('dinner');
+            // Store results
+            currentPlan = {
+                breakfast: getMeal('breakfast'),
+                lunch: getMeal('lunch'),
+                snacks: getMeal('snacks'),
+                dinner: getMeal('dinner')
+            };
 
-            // 4. Update UI
             document.getElementById('total-calories').innerText = totalCals;
             document.getElementById('display-occasion').innerText = currentOccasion;
 
             const grid = document.getElementById('meal-grid');
             grid.innerHTML = `
-                ${createMealCard('Breakfast', breakfast, 'sun')}
-                ${createMealCard('Lunch', lunch, 'utensils')}
-                ${createMealCard('Snacks', snacks, 'coffee')}
-                ${createMealCard('Dinner', dinner, 'moon')}
+                ${createMealCard('Breakfast', currentPlan.breakfast, 'sun', 'breakfast')}
+                ${createMealCard('Lunch', currentPlan.lunch, 'utensils', 'lunch')}
+                ${createMealCard('Snacks', currentPlan.snacks, 'coffee', 'snacks')}
+                ${createMealCard('Dinner', currentPlan.dinner, 'moon', 'dinner')}
             `;
 
-            // 5. Toggle Views
             document.getElementById('input-section').classList.add('hidden');
             document.getElementById('result-section').classList.remove('hidden');
             document.getElementById('reset-btn').classList.remove('hidden');
-
-            // Re-render icons for new elements
             lucide.createIcons();
-            
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Reset Button Logic
+        // --- MODAL FUNCTIONS ---
+        function openRecipe(category) {
+            const meal = currentPlan[category];
+            if(!meal) return;
+
+            const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(meal.name + " vegetarian recipe")}`;
+            const prompt = `${meal.name} vegetarian food, cinematic, 8k`;
+            const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=400&nologo=true&seed=${Math.random()}`;
+
+            const content = `
+                <div class="relative h-64">
+                    <img src="${imgUrl}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <div class="text-xs font-bold uppercase tracking-widest bg-green-500 inline-block px-2 py-1 rounded mb-2">${meal.type}</div>
+                        <h2 class="text-3xl font-bold">${meal.name}</h2>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-4 text-sm text-gray-500 font-medium mb-6">
+                        <span class="flex items-center gap-1"><i data-lucide="flame" width="16" class="text-orange-500"></i> ${meal.calories} kcal</span>
+                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <span>Vegetarian</span>
+                    </div>
+
+                    <h3 class="font-bold text-gray-800 text-lg mb-3 flex items-center gap-2">
+                        <i data-lucide="chef-hat" width="20" class="text-green-600"></i> Ingredients
+                    </h3>
+                    <ul class="grid grid-cols-2 gap-2 mb-8">
+                        ${meal.ingredients.map(ing => `<li class="flex items-center gap-2 text-gray-600 text-sm"><span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>${ing}</li>`).join('')}
+                    </ul>
+
+                    <div class="bg-orange-50 rounded-xl p-6 border border-orange-100 mb-6">
+                        <h3 class="font-bold text-gray-800 mb-2">Quick Description</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">${meal.desc}</p>
+                    </div>
+
+                    <a href="${ytUrl}" target="_blank" class="block w-full bg-[#FF0000] hover:bg-[#cc0000] text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3">
+                        <i data-lucide="youtube" width="24"></i> Watch Recipe Video
+                    </a>
+                </div>
+            `;
+
+            document.getElementById('modal-content').innerHTML = content;
+            lucide.createIcons();
+
+            const modal = document.getElementById('recipe-modal');
+            const backdrop = document.getElementById('modal-backdrop');
+            const panel = document.getElementById('modal-panel');
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+            
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('opacity-0', 'translate-y-4');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('recipe-modal');
+            const backdrop = document.getElementById('modal-backdrop');
+            const panel = document.getElementById('modal-panel');
+
+            backdrop.classList.add('opacity-0');
+            panel.classList.add('opacity-0', 'translate-y-4');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+            }, 300);
+        }
+
         document.getElementById('reset-btn').addEventListener('click', () => {
             document.getElementById('input-section').classList.remove('hidden');
             document.getElementById('result-section').classList.add('hidden');
             document.getElementById('reset-btn').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-
     </script>
 </body>
 </html>
