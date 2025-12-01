@@ -113,7 +113,9 @@
 
                 <div class="relative z-10">
                     <div class="w-24 h-24 mx-auto bg-white rounded-full p-1 shadow-xl mb-4">
-                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=200&h=200&q=80" class="w-full h-full object-cover rounded-full border-4 border-green-100" alt="Healthy Food">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&h=200&q=80" 
+                             class="w-full h-full object-cover rounded-full border-4 border-green-100" 
+                             alt="Healthy Food">
                     </div>
                     <h2 class="text-3xl font-bold text-white mb-2">Build Your Plate</h2>
                     <p class="text-green-100 font-medium">Tell us about your day, get a perfect vegetarian plan.</p>
@@ -342,11 +344,15 @@
         }
 
         function createMealCard(title, meal, iconName, categoryKey) {
-            // High Quality Food Image Prompt
+            // High Quality Food Image Prompt for AI
             const prompt = `${meal.name} delicious vegetarian food dish, professional food photography, 8k, vibrant colors, cinematic lighting, appetizing, close up`;
-            // Using Pollinations for reliable generation
+            
+            // Pollinations AI URL
             const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=400&height=300&nologo=true&seed=${Math.random()}`; 
             
+            // Fallback Image (Stock Unsplash Image)
+            const fallbackUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
+
             let badgeColor = "bg-green-500";
             if(meal.type === "birthday") badgeColor = "bg-purple-500";
             if(meal.type === "fast") badgeColor = "bg-blue-500";
@@ -354,7 +360,12 @@
             return `
             <div onclick="openRecipe('${categoryKey}')" class="cursor-pointer group bg-white rounded-[1.5rem] shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full border border-gray-100 overflow-hidden hover:-translate-y-2">
                 <div class="h-48 overflow-hidden relative">
-                    <img src="${imgUrl}" alt="${meal.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                    <img src="${imgUrl}" 
+                         alt="${meal.name}" 
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                         loading="lazy"
+                         onerror="this.onerror=null;this.src='${fallbackUrl}';">
+                    
                     <div class="absolute top-4 right-4 ${badgeColor} text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg tracking-wide uppercase">
                         ${meal.type}
                     </div>
@@ -424,10 +435,13 @@
             const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(meal.name + " vegetarian recipe")}`;
             const prompt = `${meal.name} vegetarian food, cinematic, 8k`;
             const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=400&nologo=true&seed=${Math.random()}`;
+            const fallbackUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
 
             const content = `
                 <div class="relative h-64">
-                    <img src="${imgUrl}" class="w-full h-full object-cover">
+                    <img src="${imgUrl}" 
+                         class="w-full h-full object-cover"
+                         onerror="this.onerror=null;this.src='${fallbackUrl}';">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 text-white">
                         <div class="text-xs font-bold uppercase tracking-widest bg-green-500 inline-block px-2 py-1 rounded mb-2">${meal.type}</div>
